@@ -10,6 +10,22 @@ include_recipe "sensu::default"
 if node["ipaddress"] == master_address
   include_recipe "sensu::rabbitmq"
   include_recipe "sensu::redis"
+  
+  sensu_checks = data_bag("sensu_checks").map do |item| 
+    data_bag_item("sensu_checks", item)
+  end
+
+  sensu_checks.each do |check|
+    sensu_check check["id"] do
+      type check["type"]
+      command check["command"]
+      subscribers check["subscribers"]
+      interval check["interval"]
+      handlers check["handlers"]
+      additional check["additional"]
+    end
+  end
+
   include_recipe "sensu::server_service"
   include_recipe "sensu::api_service"
   include_recipe "uchiwa"
