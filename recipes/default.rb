@@ -20,14 +20,10 @@ sensu_client node.name do
   subscriptions node["sensu"]["roles"] + ["all"]
 end
 
-%w[
-  check-procs.rb
-  check-banner.rb
-  check-http.rb
-  check-log.rb
-  check-mtime.rb
-  check-tail.rb
-  check-fs-writable.rb
+%w[check-disk.rb
+   check-load.rb
+   check-mem-pcnt.sh
+   mysql-replication-status.rb
 ].each do |default_plugin|
   cookbook_file "/etc/sensu/plugins/#{default_plugin}" do
     source "plugins/#{default_plugin}"
