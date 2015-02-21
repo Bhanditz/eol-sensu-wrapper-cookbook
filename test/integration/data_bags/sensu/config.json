@@ -1,0 +1,5 @@
+{
+  "id": "config",
+  "master_address": "127.0.0.1",
+  "master_name": "sensu"
+}
