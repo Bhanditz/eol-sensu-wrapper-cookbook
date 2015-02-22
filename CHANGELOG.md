@@ -1,5 +1,9 @@
 eol-sensu-wrapper CHANGELOG
 ============================
+This file is used to list changes made in each version of the eol-sensu-cookbook cookbook.
+0.1.4
+-----
+- [dimus][1] - functional sensu setup
 
 This file is used to list changes made in each version of the eol-sensu-cookbook cookbook.
 0.1.3
