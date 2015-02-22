@@ -11,4 +11,5 @@ default["eol_sensu_wrapper"]["plugins"] = %w(
   check-mem-pcnt.sh
   check-mysql-alive.rb
   check-mysql-replication.rb 
+  metrics-vmstat.rb
 )

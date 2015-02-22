@@ -9,22 +9,23 @@ node.override["sensu"]["rabbitmq"]["host"] = master_address
 node.override["sensu"]["redis"]["host"] = master_address
 node.override["sensu"]["api"]["host"] = master_address
 
-if cnf["uchiva_user"]
-  node.override["uchiwa"]["settings"]["user"] = cnf["uchiva_user"]
+if cnf["uchiwa_user"]
+  node.override["uchiwa"]["settings"]["user"] = cnf["uchiwa_user"]
 end
 
-if cnf["uchiva_password"]
-  node.override["uchiwa"]["settings"]["password"] =
-    cnf["uchiva_password"]
+if cnf["uchiwa_password"]
+  node.override["uchiwa"]["settings"]["pass"] =
+    cnf["uchiwa_password"]
 end
 
-if cnf["uchiva_port"]
-  node.override["uchiwa"]["settings"]["port"] = cnf["uchiva_port"]
+if cnf["uchiwa_port"]
+  node.override["uchiwa"]["settings"]["port"] = cnf["uchiwa_port"]
 end
 
 sensu_gem "sensu-plugin" do
   version node["eol_sensu_wrapper"]["sensu_plugin_version"]
 end
+
 if node["eol_sensu_wrapper"]["roles"].include?("mysql")
   sensu_gem "mysql"
   sensu_gem "inifile"
