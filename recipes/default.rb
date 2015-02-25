@@ -26,7 +26,7 @@ sensu_gem "sensu-plugin" do
   version node["eol_sensu_wrapper"]["sensu_plugin_version"]
 end
 
-if node["eol_sensu_wrapper"]["roles"].include?("mysql")
+if ["mysql", "sensu"].any? { |r| node["eol_sensu_wrapper"]["roles"].include?(r) }
   sensu_gem "mysql"
   sensu_gem "inifile"
 end
