@@ -22,12 +22,14 @@ if cnf["uchiwa_port"]
   node.override["uchiwa"]["settings"]["port"] = cnf["uchiwa_port"]
 end
 
+package "sysstat"
+
 sensu_gem "sensu-plugin" do
   version node["eol_sensu_wrapper"]["sensu_plugin_version"]
 end
 
 if node["eol_sensu_wrapper"]["roles"] & %w(mysql sensu)
-  sensu_gem "mysql"
+  sensu_gem "mysql2"
   sensu_gem "inifile"
 end
 
@@ -68,5 +70,7 @@ node["eol_sensu_wrapper"]["plugins"].each do |plugin|
     mode 0755
   end
 end
+
+include_recipe "eol-sensu-wrapper::handlers"
 
 include_recipe "sensu::client_service"

@@ -9,7 +9,7 @@
 # for details.
 
 require 'sensu-plugin/check/cli'
-require 'mysql'
+require 'mysql2'
 
 class CheckMysqlReplicationStatus < Sensu::Plugin::Check::CLI
 
@@ -70,7 +70,9 @@ class CheckMysqlReplicationStatus < Sensu::Plugin::Check::CLI
 
     begin
       db = Mysql.new(db_host, db_user, db_pass, nil, db_port)
-      results = db.query 'show slave status'
+      db = Mysql2::Client.new(host: config[:hostname], username: db_user,
+                              password: db_pass, port: db_port)
+      results = db.query('show slave status')
 
       unless results.nil?
         results.each_hash do |row|
@@ -113,7 +115,7 @@ class CheckMysqlReplicationStatus < Sensu::Plugin::Check::CLI
         ok "show slave status was nil. This server is not a slave."
       end
 
-    rescue Mysql::Error => e
+    rescue Mysql2::Error => e
       errstr = "Error code: #{e.errno} Error message: #{e.error}"
       critical "#{errstr} SQLSTATE: #{e.sqlstate}" if e.respond_to?("sqlstate")
 
