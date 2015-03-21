@@ -73,8 +73,9 @@ node["eol_sensu_wrapper"]["plugins"].each do |plugin|
     mode 0755
   end
 end
-File.umask(umask)
 
 include_recipe "eol-sensu-wrapper::handlers"
 
 include_recipe "sensu::client_service"
+
+File.umask(umask)
