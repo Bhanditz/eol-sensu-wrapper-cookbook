@@ -31,7 +31,7 @@ sensu_gem "sensu-plugin" do
   version node["eol_sensu_wrapper"]["sensu_plugin_version"]
 end
 
-if node["eol_sensu_wrapper"]["roles"] & %w(mysql sensu)
+unless (node["eol_sensu_wrapper"]["roles"] & %w(mysql sensu)).empty?
   sensu_gem "mysql2"
   sensu_gem "inifile"
 end
