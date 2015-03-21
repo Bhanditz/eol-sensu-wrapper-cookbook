@@ -22,6 +22,8 @@ if cnf["uchiwa_port"]
   node.override["uchiwa"]["settings"]["port"] = cnf["uchiwa_port"]
 end
 
+umask = File.umask
+File.umask(0022)
 sensu_gem "sensu-plugin" do
   version node["eol_sensu_wrapper"]["sensu_plugin_version"]
 end
@@ -68,5 +70,6 @@ node["eol_sensu_wrapper"]["plugins"].each do |plugin|
     mode 0755
   end
 end
+File.umask(umask)
 
 include_recipe "sensu::client_service"
