@@ -24,12 +24,15 @@ end
 
 umask = File.umask
 File.umask(0022)
+
+package "sysstat"
+
 sensu_gem "sensu-plugin" do
   version node["eol_sensu_wrapper"]["sensu_plugin_version"]
 end
 
-if node["eol_sensu_wrapper"]["roles"].include?("mysql")
-  sensu_gem "mysql"
+if node["eol_sensu_wrapper"]["roles"] & %w(mysql sensu)
+  sensu_gem "mysql2"
   sensu_gem "inifile"
 end
 
@@ -71,5 +74,7 @@ node["eol_sensu_wrapper"]["plugins"].each do |plugin|
   end
 end
 File.umask(umask)
+
+include_recipe "eol-sensu-wrapper::handlers"
 
 include_recipe "sensu::client_service"
