@@ -85,9 +85,9 @@ class SysMetrics < Sensu::Plugin::Metric::CLI::Graphite
         iowaiting: @vmstat[15]
       },
       load_per_cpu: {
-        one_minute: (@loadstat[-3]/@cpunum).round(2),
-        five_minutes: (@loadstat[-2]/@cpunum).round(2),
-        fifteen_minutes: (@loadstat[-1]/@cpunum).round(2)
+        one_minute: (@loadstat[-3]/@cpunum).round(4),
+        five_minutes: (@loadstat[-2]/@cpunum).round(4),
+        fifteen_minutes: (@loadstat[-1]/@cpunum).round(4)
       }
     }
     metrics.each do |parent, children|
