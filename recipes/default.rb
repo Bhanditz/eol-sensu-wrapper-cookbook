@@ -41,6 +41,7 @@ include_recipe "sensu::default"
 if node["ipaddress"] == master_address
   include_recipe "sensu::rabbitmq"
   include_recipe "sensu::redis"
+  include_recipe "postfix"
 
   sensu_checks = data_bag("sensu_checks").map do |item|
     data_bag_item("sensu_checks", item)
