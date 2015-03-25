@@ -39,6 +39,8 @@ end
 include_recipe "sensu::default"
 
 if node["ipaddress"] == master_address
+  sensu_gem "pony"
+
   include_recipe "sensu::rabbitmq"
   include_recipe "sensu::redis"
   include_recipe "postfix"
@@ -74,6 +76,8 @@ node["eol_sensu_wrapper"]["plugins"].each do |plugin|
     mode 0755
   end
 end
+
+log "Adding Handlers"
 
 include_recipe "eol-sensu-wrapper::handlers"
 
