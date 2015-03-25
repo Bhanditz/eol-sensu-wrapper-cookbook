@@ -73,7 +73,7 @@ class Sysopia < Sensu::Handler
     db_user = section["user"]
     db_pass = section["password"]
     db_database = section["database"]
-    
+
     # event values
     client_id = @event["client"]["name"]
     check_name = @event["check"]["name"]
@@ -86,12 +86,6 @@ class Sysopia < Sensu::Handler
                               password: db_pass, database: db_database)
       id = comp_id(db, output[0])
       enter_stats(db, output, id)
-      # db.query("INSERT INTO "\
-      #           "sensumetrics.sensu_historic_metrics("\
-      #           "client_id, check_name, issue_time, "\
-      #           "output, status) "\
-      #           "VALUES ("#{client_id}", "#{check_name}", "\
-      #           "#{check_issued}, "#{check_output}", #{check_status})")
     rescue Mysql2::Error => e
       puts e.errno
       puts e.error
