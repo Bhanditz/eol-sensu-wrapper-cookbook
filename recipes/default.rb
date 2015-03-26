@@ -41,7 +41,6 @@ include_recipe "sensu::default"
 if node["ipaddress"] == master_address
   sensu_gem "pony"
   sensu_gem "hipchat"
-  sensu_gem "openssl"
 
   include_recipe "sensu::rabbitmq"
   include_recipe "sensu::redis"
