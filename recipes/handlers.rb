@@ -1,6 +1,6 @@
 cnf = data_bag_item("sensu", "handlers")
 
-%w(sysopia ponymailer).each do |h|
+%w(sysopia ponymailer hipchat).each do |h|
 
   log "Handler: #{h}"
 
@@ -9,15 +9,8 @@ cnf = data_bag_item("sensu", "handlers")
     mode 0755
   end
 
-  case h
-  when "sysopia"
-    sensu_snippet h do
-      content mysqlini: cnf[h]["mysqlini"]
-    end
-  when "ponymailer"
-    sensu_snippet h do
-      content ponymailer: cnf[h]
-    end
+  sensu_snippet h do
+    content cnf[h]
   end
 
   sensu_handler h do
