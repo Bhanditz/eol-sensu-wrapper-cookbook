@@ -49,6 +49,11 @@ class CheckMysqlReplicationStatus < Sensu::Plugin::Check::CLI
     :default => 1800,
     :proc => lambda { |s| s.to_i }
 
+  option :ini,
+    description: 'My.cnf ini file',
+    short: '-i',
+    long: '--ini VALUE'
+
   option :help,
     :short => "-h",
     :long => "--help",
@@ -69,6 +74,16 @@ class CheckMysqlReplicationStatus < Sensu::Plugin::Check::CLI
     end
 
     begin
+      if config[:ini]
+        ini = IniFile.load(config[:ini])
+        section = ini['client']
+        db_user = section['user']
+        db_pass = section['password']
+      else
+        db_user = config[:user]
+        db_pass = config[:password]
+      end
+
       db = Mysql.new(db_host, db_user, db_pass, nil, db_port)
       db = Mysql2::Client.new(host: config[:hostname], username: db_user,
                               password: db_pass, port: db_port)

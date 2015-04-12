@@ -1,5 +1,6 @@
 cnf = data_bag_item("sensu", "config")
 master_address = cnf["master_address"] || node["ipaddress"]
+additional_attributes = cnf["additional"] || {}
 
 if cnf[node.name] && cnf[node.name]["roles"]
   node.override["eol_sensu_wrapper"]["roles"] = cnf[node.name]["roles"]
@@ -69,6 +70,7 @@ end
 sensu_client node.name do
   address node["ipaddress"]
   subscriptions node["eol_sensu_wrapper"]["roles"] + ["all"]
+  additional(additional_attributes)
 end
 
 node["eol_sensu_wrapper"]["plugins"].each do |plugin|

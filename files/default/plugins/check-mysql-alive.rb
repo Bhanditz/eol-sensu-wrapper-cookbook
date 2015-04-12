@@ -99,17 +99,17 @@ class CheckMySQL < Sensu::Plugin::Check::CLI
          long: '--socket SOCKET'
 
   def run
-    if config[:ini]
-      ini = IniFile.load(config[:ini])
-      section = ini['client']
-      db_user = section['user']
-      db_pass = section['password']
-    else
-      db_user = config[:user]
-      db_pass = config[:password]
-    end
-
     begin
+      if config[:ini]
+        ini = IniFile.load(config[:ini])
+        section = ini['client']
+        db_user = section['user']
+        db_pass = section['password']
+      else
+        db_user = config[:user]
+        db_pass = config[:password]
+      end
+
       db = Mysql2::Client.new(host: config[:hostname], username: db_user,
                               password: db_pass)
       info = db.server_info[:version]
