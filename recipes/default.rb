@@ -73,11 +73,13 @@ sensu_client node.name do
   additional(additional_attributes)
 end
 
-node["eol_sensu_wrapper"]["plugins"].each do |plugin|
-  cookbook_file "/etc/sensu/plugins/#{plugin}" do
-    source "plugins/#{plugin}"
-    mode 0755
-  end
+remote_directory "/etc/sensu/plugins" do
+  source "plugins"
+  files_mode "0750"
+  files_owner "root"
+  files_group "sensu"
+  owner "root"
+  group "sensu"
 end
 
 log "Adding Handlers"
