@@ -62,64 +62,63 @@ require 'inifile'
 
 class CheckMySQL < Sensu::Plugin::Check::CLI
   option :user,
-         description: 'MySQL User',
-         short: '-u USER',
-         long: '--user USER'
+    description: 'MySQL User',
+    short: '-u USER',
+    long: '--user USER'
 
   option :password,
-         description: 'MySQL Password',
-         short: '-p PASS',
-         long: '--password PASS'
+    description: 'MySQL Password',
+    short: '-p PASS',
+    long: '--password PASS'
 
   option :ini,
-         description: 'My.cnf ini file',
-         short: '-i',
-         long: '--ini VALUE'
+    description: 'My.cnf ini file',
+    short: '-i',
+    long: '--ini VALUE'
 
   option :hostname,
-         description: 'Hostname to login to',
-         short: '-h HOST',
-         long: '--hostname HOST'
+    description: 'Hostname to login to',
+    short: '-h HOST',
+    long: '--hostname HOST'
 
   option :database,
-         description: 'Database schema to connect to',
-         short: '-d DATABASE',
-         long: '--database DATABASE',
-         default: 'test'
+    description: 'Database schema to connect to',
+    short: '-d DATABASE',
+    long: '--database DATABASE',
+    default: 'test'
 
   option :port,
-         description: 'Port to connect to',
-         short: '-P PORT',
-         long: '--port PORT',
-         default: '3306'
+    description: 'Port to connect to',
+    short: '-P PORT',
+    long: '--port PORT',
+    default: '3306'
 
   option :socket,
-         description: 'Socket to use',
-         short: '-s SOCKET',
-         long: '--socket SOCKET'
+    description: 'Socket to use',
+    short: '-s SOCKET',
+    long: '--socket SOCKET'
 
   def run
-    begin
-      if config[:ini]
-        ini = IniFile.load(config[:ini])
-        section = ini['client']
-        db_user = section['user']
-        db_pass = section['password']
-      else
-        db_user = config[:user]
-        db_pass = config[:password]
-      end
+    db_host = config[:host] || "0.0.0.0"
 
-      db = Mysql2::Client.new(host: config[:hostname], username: db_user,
-                              password: db_pass)
-      info = db.server_info[:version]
-      ok "Server version: #{info}"
-    rescue Mysql2::Error => e
-      critical "Error message: #{e.error}"
-    rescue => e
-      critical e.error
-    ensure
-      db.close if db
+    if config[:ini].nil?
+      unknown "Must specify ini file: use --ini option"
     end
+
+    ini = IniFile.load(config[:ini])
+    section = ini['client']
+    db_user = section['user']
+    db_pass = section['password']
+
+    db = Mysql2::Client.new(host: db_host, username: db_user,
+                            password: db_pass)
+    info = db.server_info[:version]
+    ok "Server version: #{info}"
+  rescue Mysql2::Error => e
+    critical "Error message: #{e.error}"
+  rescue => e
+    critical e.error
+  ensure
+    db.close if db
   end
 end

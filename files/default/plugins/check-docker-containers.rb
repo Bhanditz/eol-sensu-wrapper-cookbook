@@ -1,0 +1,22 @@
+#!/opt/sensu/embedded/bin/ruby
+# EOL production specific: script checks if all expected containers
+# are running on a node
+
+require "sensu-plugin/check/cli"
+
+class CheckDockerContainers < Sensu::Plugin::Check::CLI
+  EXPECTED_CONTAINERS="/eol/shared/containers"
+
+  def run
+    running = `/usr/local/bin/docker_names`.strip.split.sort
+    expected = File.read(EXPECTED_CONTAINERS).strip.split("\n")
+    missing = (expected - running).join(", ")
+    critical "Containers #{missing} are not running!" unless missing.empty?
+    ok "All expected containers are running"
+  rescue Errno::ENOENT
+    unknown "Cannot open file #{EXPECTED_CONTAINERS}"
+  rescue => e
+    unknown e
+  end
+end
+
