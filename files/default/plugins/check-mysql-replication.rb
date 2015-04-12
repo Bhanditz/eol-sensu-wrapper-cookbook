@@ -13,6 +13,11 @@ require 'mysql2'
 
 class CheckMysqlReplicationStatus < Sensu::Plugin::Check::CLI
 
+  option :host,
+    :short => '-h',
+    :long => '--host=VALUE',
+    :description => 'Database host'
+
   option :warn,
     :short => '-w',
     :long => '--warning=VALUE',
@@ -42,12 +47,9 @@ class CheckMysqlReplicationStatus < Sensu::Plugin::Check::CLI
     :exit => 0
 
   def run
-    db_host = config[:host]
-    db_user = config[:user]
-    db_pass = config[:pass]
-    db_port = config[:port]
+    db_host = config[:host] || '0.0.0.0'
 
-    unless config[:ini]
+    if config[:ini].nil?
       unknown "Must specify ini file"
     end
 
@@ -57,9 +59,7 @@ class CheckMysqlReplicationStatus < Sensu::Plugin::Check::CLI
       db_user = section['user']
       db_pass = section['password']
 
-      db = Mysql.new(db_host, db_user, db_pass, nil, db_port)
-      db = Mysql2::Client.new(host: config[:hostname], username: db_user,
-                              password: db_pass, port: db_port)
+      db = Mysql2::Client.new(host: db_host, username: db_user, password: db_pass)
       results = db.query('show slave status')
 
       unless results.nil?
