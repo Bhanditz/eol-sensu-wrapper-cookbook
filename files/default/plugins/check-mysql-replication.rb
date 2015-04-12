@@ -13,28 +13,6 @@ require 'mysql2'
 
 class CheckMysqlReplicationStatus < Sensu::Plugin::Check::CLI
 
-  option :host,
-    :short => '-h',
-    :long => '--host=VALUE',
-    :description => 'Database host'
-
-  option :user,
-    :short => '-u',
-    :long => '--username=VALUE',
-    :description => 'Database username'
-
-  option :pass,
-    :short => '-p',
-    :long => '--password=VALUE',
-    :description => 'Database password'
-
-  option :port,
-    :short => '-P',
-    :long => '--port=VALUE',
-    :description => 'Database port',
-    :default => 3306,
-    :proc => lambda { |s| s.to_i }
-
   option :warn,
     :short => '-w',
     :long => '--warning=VALUE',
@@ -69,20 +47,15 @@ class CheckMysqlReplicationStatus < Sensu::Plugin::Check::CLI
     db_pass = config[:pass]
     db_port = config[:port]
 
-    if [db_host, db_user, db_pass].any? {|v| v.nil? }
-      unknown "Must specify host, user, password"
+    unless config[:ini]
+      unknown "Must specify ini file"
     end
 
     begin
-      if config[:ini]
-        ini = IniFile.load(config[:ini])
-        section = ini['client']
-        db_user = section['user']
-        db_pass = section['password']
-      else
-        db_user = config[:user]
-        db_pass = config[:password]
-      end
+      ini = IniFile.load(config[:ini])
+      section = ini['client']
+      db_user = section['user']
+      db_pass = section['password']
 
       db = Mysql.new(db_host, db_user, db_pass, nil, db_port)
       db = Mysql2::Client.new(host: config[:hostname], username: db_user,
