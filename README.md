@@ -87,8 +87,9 @@ server, API, and GUI.
 For this example assume the following:
 
 * Your future Sensu server has IP 10.0.0.10
-* You are interested in one check `check-disk.rb`
-* You are interested in one metric `metric-sysopia.rb`
+* You are interested in one check plugin `check-disk.rb`
+* You are interested in one metric plugin `metric-sysopia.rb`
+* You want to send alert email via `ponymailer.rb` handler
 
 In your own cookbook:
 
