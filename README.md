@@ -55,21 +55,27 @@ critical and critical conditions for these parameters. For example
 `check-disk.rb` plugin monitors percentage of disk space left on each partition
 of the servers.
 
-You can find included plugins in [files/default/plugins][1]. Comment on top of
-of every plugin file explains it's purpose
+You can find included plugins in [files/default/plugins][1]. A comment on top
+of of every plugin file explains it's purpose
 
 Build-in "plugin"
 -----------------
 
-Keepalive is an internal Sensu service which gets signals from sensu clients from all the machines. If server is down or sensu-slient stopped working -- server generates alert message and sends it the alerts to all keepalive handlers. These handlers are setup differently from checks, and are described further below.
+Keepalive is an internal Sensu service which gets signals from sensu clients
+from all the machines. If server is down or sensu-slient stopped working --
+server generates alert message and sends it the alerts to all keepalive
+handlers. These handlers are setup differently from checks, and are described
+further below.
 
 Included handlers
 -----------------
 
-Sensu handlers allow send alerts from Sensu checks and metrics to various communication channels -- Twitter, Email, Hipchat, Gitter etc. For example `ponymailer.rb` handler sends alerts by email to subscribed administrators.
+Sensu handlers allow send alerts from Sensu checks and metrics to various
+communication channels -- Twitter, Email, Hipchat, Gitter etc. For example
+`ponymailer.rb` handler sends alerts by email to subscribed administrators.
 
-You can find included handlers in [files/default/handlers][1]. Comment on top of
-of every handler file explains it's purpose
+You can find included handlers in [files/default/handlers][2]. A comment on top
+of of every handler file explains it's purpose
 
 Usage
 -----
