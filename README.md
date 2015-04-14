@@ -77,24 +77,40 @@ communication channels -- Twitter, Email, Hipchat, Gitter etc. For example
 You can find included handlers in [files/default/handlers][2]. A comment on top
 of of every handler file explains it's purpose
 
+Adding new plugins and handlers
+-------------------------------
+
+If you want to check for additional system paramters, collect different metrics
+or to send alert to a new service -- you can start by looking at existing
+[Sensu community plugins][3]. You can modify scripts to your needs or write
+your own.
+
+
 Usage
 -----
-#### eol-sensu-cookbook::default
 
-To configure your Sensu installation decide which machine will run Sensu's
+To configure your Sensu installation decide which machine will host Sensu's
 server, API, and GUI.
 
-For this example assume the following:
+For this example lets assume the following:
 
-* Your future Sensu server has IP 10.0.0.10
+* Your future Sensu node has name `sensu.example.org` and it's IP is 10.0.0.1
+* A node which will be monitored has name `myserver.example.org` and IP 10.0.0.2 
 * You are interested in one check plugin `check-disk.rb`
 * You are interested in one metric plugin `metric-sysopia.rb`
-* You want to send alert email via `ponymailer.rb` handler
+* You want to send alerts to hipchat using `hipchat.rb` handler
 
-In your own cookbook:
+In your own cookbook include the default `eol-sensu-wrapper` recipe:
 
 ```ruby
 include_recipe "eol-sensu-wrapper"
+```
+You can also include the recipe into a node's or a role's `run_list`:
+
+```json
+{"run_list": 
+  ["recipe[eol-sensu-wrapper]"]
+}
 ```
 
 Use knife to create a data bags for `sensu` and `sensu_checks`.
@@ -104,6 +120,106 @@ $ knife data bag create sensu
 $ knife data bag create sensu_checks
 ```
 
+In `sensu` data bag create items `config` and `handlers`. In `sensu_checks`
+create items corresponding to your checks in our case `check-disk`.
+
+```bash
+$ knife data bag create sensu config
+$ knife data bag create sensu handlers
+$ knife data bag create sensu ssl
+$ knife data bag create sensu_checks check-disk
+```
+
+### Item sensu -> config
+
+Item `config` contains general information about Sensu:
+
+```json
+{
+  "id": "config",
+  "master_address": "10.0.0.1",
+  "uchiwa_user": "uchiwa",
+  "uchiwa_password": "secret",
+  "additional": {
+    "keepalive": {
+      "handlers": ["ponymailer"]
+    }
+  },
+  "sensu.example.com": {
+    "roles": ["sensu", "server"]
+  },
+  "eol-db-master1.si.edu": {
+    "roles": ["server"]
+  }
+}
+```
+| Parameter      | Description                                                |
+|----------------|------------------------------------------------------------|
+| master_address | Tells where to install sensu server and where client listen|
+| uchiva_user    | User for web interface (uchiva app)                        |
+| uchiva_password| Password for web interface (uchiva app)                    |
+| keepalive      | Instrucions for built-in keepalive check (sets handlers)   |
+
+Config data bag also assigns roles to nodes. Later you can assign plugins to
+work only for specific role/roles.
+
+### Item sensu -> handlers
+
+Item `handlers` contains configuration about handlers of the system. In our
+case `ponymailer`.
+
+```json
+{
+  "id": "handlers",
+  "ponymailer": {
+    "recipients": [
+      "user1@example.org",
+      "user2@example.org",
+      "user3@example.org"
+    ],
+    "from": "alerts@example.org",
+    "fromname": "Sensu alert",
+    "hostname": "localhost",
+    "port": 25
+  },
+  "hipchat": {
+    "apikey": "124",
+    "room": "Ops"
+  },
+  "postfix": {
+    "mydomain": "sensu.example.org",
+    "myorigin": "sensu.example.org",
+    "smtp_use_tls": "no",
+    "smtpd_use_tls": "no"
+  },
+  "sysopia": {
+    "mysqlini": "/etc/sensu/my_sysopia.cnf"
+  }
+}
+```
+Data from this file set parameters for handlers
+
+### Item sensu -> ssl
+
+Sensu uses ssl protocol to communicate between servers. To generate ssl
+databag in your file system you can use a [script][4] provided in `sensu`
+cookbook: 
+
+### Item sensu_checks -> check-disk
+
+Item `check-disk` explains how this particular check should be used with 
+Sensu clients.
+
+```json
+{
+  "id": "check_disk",
+  "command": "check-disk.rb -c 95 -w 85",
+  "handlers": [ "ponymailer", "hipchat" ],
+  "subscribers": [ "all" ],
+  "interval": 3600
+}
+```
+Read [Sensu documentation][5] how to configure checks and handlers
 
 Contributing
 ------------
@@ -117,15 +233,19 @@ Contributing
 License and Authors
 -------------------
 
-Authors: [Dmitry Mozzherin][1], [Jeremy Rice][2]
+Authors: [Dmitry Mozzherin][6], [Jeremy Rice][7]
 
 
-Copyright: 2015, [Marine Biological Laboratory][3]
+Copyright: 2015, [Marine Biological Laboratory][8]
 
-Licensed under the [MIT License][4]
+Licensed under the [MIT License][9]
 
-[1]: https://github.com/EOL/eol-sensu-wrapper-cookbook/tree/master/files/default
-[1]: https://github.com/dimus
-[2]: https://github.com/jrice
-[3]: http://mbl.edu
-[4]: https://github.com/EOL/eol-users-cookbook/blob/master/LICENSE
+[1]: https://github.com/EOL/eol-sensu-wrapper-cookbook/tree/master/files/default/plugins
+[2]: https://github.com/EOL/eol-sensu-wrapper-cookbook/tree/master/files/default/handlers
+[3]: https://github.com/sensu/sensu-community-plugins.git
+[4]: https://github.com/sensu/sensu-chef/blob/master/examples/ssl/generate_databag.rb
+[5]: http://sensuapp.org/docs
+[6]: https://github.com/dimus
+[7]: https://github.com/jrice
+[8]: http://mbl.edu
+[9]: https://github.com/EOL/eol-users-cookbook/blob/master/LICENSE
