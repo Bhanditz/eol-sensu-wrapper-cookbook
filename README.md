@@ -37,7 +37,7 @@ Attributes
     <td><tt>["uchiwa"]["version"]</tt></td>
     <td>String</td>
     <td>Version of Uchiva (Web GUI) to install</td>
-    <td><tt>0.4.0-1</tt></td>
+    <td><tt>0.7.1-1</tt></td>
   </tr>
   <tr>
     <td><tt>["eol_sensu_wrapper"]["roles"]</tt></td>
@@ -95,7 +95,7 @@ server, API, and GUI.
 For this example lets assume the following:
 
 * Your future Sensu node has name `sensu.example.org` and it's IP is 10.0.0.1
-* A node which will be monitored has name `myserver.example.org` and IP 10.0.0.2 
+* A node which will be monitored has name `myserver.example.org` and IP 10.0.0.2
 * You are interested in one check plugin `check-disk.rb`
 * You are interested in one metric plugin `metric-sysopia.rb`
 * You want to send alerts to hipchat using `hipchat.rb` handler
@@ -108,7 +108,7 @@ include_recipe "eol-sensu-wrapper"
 You can also include the recipe into a node's or a role's `run_list`:
 
 ```json
-{"run_list": 
+{"run_list":
   ["recipe[eol-sensu-wrapper]"]
 }
 ```
@@ -203,11 +203,11 @@ Data from this file set parameters for handlers
 
 Sensu uses ssl protocol to communicate between servers. To generate ssl
 databag in your file system you can use a [script][4] provided in `sensu`
-cookbook: 
+cookbook:
 
 ### Item sensu_checks -> check-disk
 
-Item `check-disk` explains how this particular check should be used with 
+Item `check-disk` explains how this particular check should be used with
 Sensu clients.
 
 ```json
