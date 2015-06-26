@@ -6,7 +6,7 @@ require "mysql2"
 require "inifile"
 
 class Sysopia < Sensu::Handler
-  GRANULARITY = [10,9,8,7,6,5,4,3,2,1,0]
+  GRANULARITY = [10,9,8,7,6,5,4,3,2,1]
 
   FIELDS = {
     procs_waiting: "processes_waiting",
@@ -43,13 +43,13 @@ class Sysopia < Sensu::Handler
   end
 
   def granularity(db, timestamp)
-    idx = 1
+    idx = 0
     res = db.query("select id, timestamp from stats limit 1")
     if res.first
-      mins = ((timestamp - res.first["timestamp"].to_i)/60).floor
-      idx = (mins + 1).to_s(2).reverse.index(1)
+      mins = ((timestamp.to_i - res.first["timestamp"])/60.0).floor
+      idx = (mins + 1).to_s(2).reverse.index("1")
     end
-    GRANULARITY[0..idx].join(',')
+    "'" + GRANULARITY[0..idx].join(",") + "'"
   end
 
   def enter_stats(db, output, id)
