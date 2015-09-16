@@ -27,7 +27,8 @@ class Sysopia < Sensu::Handler
     cpu_iowaiting: "cpu_wait",
     load_per_cpu_one_minute: "load_one",
     load_per_cpu_five_minutes: "load_five",
-    load_per_cpu_fifteen_minutes: "load_fifteen"
+    load_per_cpu_fifteen_minutes: "load_fifteen",
+    disk_usage: "disk_usage"
   }
   # override filters from Sensu::Handler. not appropriate for metric handlers
   def filter; end
@@ -42,12 +43,23 @@ class Sysopia < Sensu::Handler
     res.first["id"]
   end
 
+  def get_mins_id(db, mins)
+    mins_id = db.query("select id from minutes where minutes = #{mins}").first
+    if mins_id
+      mins_id["id"]
+    else
+      db.query("insert into minutes (minutes) values (#{mins})")
+      db.query("select last_insert_id() as id").first["id"]
+    end
+  end
+
   def granularity(db, timestamp)
     idx = 0
     res = db.query("select id, timestamp from stats limit 1")
     if res.first
       mins = ((timestamp.to_i - res.first["timestamp"])/60.0).floor
-      idx = (mins + 1).to_s(2).reverse.index("1")
+      mins_id = get_mins_id(db, mins)
+      idx = mins_id.to_s(2).reverse.index("1")
     end
     "'" + GRANULARITY[0..idx].join(",") + "'"
   end
